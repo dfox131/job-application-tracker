@@ -23,7 +23,42 @@ app.get("/health", async (_req, res) => {
     console.error("Health check failed:", error);
     res.status(500).json({
       ok: false,
-      error: "Database connection failed",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/applications", async (req, res) => {
+  try {
+    const { company, role, status, dateApplied, link, notes } = req.body || {};
+
+    if (!company || !role) {
+      return res.status(400).json({
+        ok: false,
+        error: "Company and role are required.",
+      });
+    }
+
+    const application = await prisma.application.create({
+      data: {
+        company: company.trim(),
+        role: role.trim(),
+        status: status?.trim() || "APPLIED",
+        dateApplied: dateApplied ? new Date(dateApplied) : null,
+        link: link?.trim() || null,
+        notes: notes?.trim() || null,
+      },
+    });
+
+    res.status(201).json({
+      ok: true,
+      application,
+    });
+  } catch (error) {
+    console.error("Create application failed:", error);
+    res.status(500).json({
+      ok: false,
+      error: "Failed to create application.",
     });
   }
 });
