@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   deleteApplication,
@@ -29,10 +29,13 @@ export default function DashboardPage() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
   async function loadApplications() {
     try {
       setLoading(true);
+      setError("");
       const data = await getApplications();
       setApplications(data.applications || []);
     } catch (err) {
@@ -63,6 +66,22 @@ export default function DashboardPage() {
     }
   }
 
+  const filteredApplications = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return applications.filter((application) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        application.company.toLowerCase().includes(normalizedSearch) ||
+        application.role.toLowerCase().includes(normalizedSearch);
+
+      const matchesStatus =
+        statusFilter === "ALL" || application.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [applications, searchTerm, statusFilter]);
+
   if (loading) {
     return <p>Loading applications...</p>;
   }
@@ -86,15 +105,52 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      <div className="summary-card">
-        <p className="summary-label">Total Applications</p>
-        <p className="summary-value">{applications.length}</p>
+      <div className="dashboard-controls-card">
+        <div className="dashboard-controls">
+          <div className="control-group search-group">
+            <label htmlFor="search">Search</label>
+            <input
+              id="search"
+              type="text"
+              placeholder="Search by company or role"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </div>
+
+          <div className="control-group filter-group">
+            <label htmlFor="statusFilter">Status</label>
+            <select
+              id="statusFilter"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="APPLIED">Applied</option>
+              <option value="INTERVIEW">Interview</option>
+              <option value="OFFER">Offer</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      {applications.length === 0 ? (
+      <div className="summary-row">
+        <div className="summary-card">
+          <p className="summary-label">Total Applications</p>
+          <p className="summary-value">{applications.length}</p>
+        </div>
+
+        <div className="summary-card">
+          <p className="summary-label">Filtered Results</p>
+          <p className="summary-value">{filteredApplications.length}</p>
+        </div>
+      </div>
+
+      {filteredApplications.length === 0 ? (
         <div className="empty-state">
-          <h2>No applications yet</h2>
-          <p>Add your first application to get started.</p>
+          <h2>No matching applications</h2>
+          <p>Try adjusting your search or filter.</p>
         </div>
       ) : (
         <div className="table-card">
@@ -110,7 +166,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {applications.map((application) => (
+              {filteredApplications.map((application) => (
                 <tr key={application.id}>
                   <td className="company-cell">{application.company}</td>
                   <td>{application.role}</td>
