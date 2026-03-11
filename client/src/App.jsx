@@ -14,6 +14,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/new" element={<ApplicationFormPage />} />
+          <Route path="/edit/:id" element={<ApplicationFormPage />} />
         </Routes>
       </div>
     </BrowserRouter>

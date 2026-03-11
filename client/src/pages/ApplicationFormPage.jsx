@@ -1,6 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createApplication } from "../services/applicationService";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  createApplication,
+  getApplicationById,
+  updateApplication,
+} from "../services/applicationService";
 
 const initialFormData = {
   company: "",
@@ -11,12 +15,48 @@ const initialFormData = {
   notes: "",
 };
 
+function formatDateForInput(dateString) {
+  if (!dateString) return "";
+  return new Date(dateString).toISOString().split("T")[0];
+}
+
 export default function ApplicationFormPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
 
   const [formData, setFormData] = useState(initialFormData);
+  const [loading, setLoading] = useState(isEditMode);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadApplication() {
+      if (!isEditMode) return;
+
+      try {
+        setLoading(true);
+        const data = await getApplicationById(id);
+        const application = data.application;
+
+        setFormData({
+          company: application.company || "",
+          role: application.role || "",
+          status: application.status || "APPLIED",
+          dateApplied: formatDateForInput(application.dateApplied),
+          link: application.link || "",
+          notes: application.notes || "",
+        });
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load application.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadApplication();
+  }, [id, isEditMode]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -39,27 +79,41 @@ export default function ApplicationFormPage() {
     try {
       setSubmitting(true);
 
-      await createApplication({
+      const payload = {
         company: formData.company,
         role: formData.role,
         status: formData.status,
         dateApplied: formData.dateApplied || null,
         link: formData.link,
         notes: formData.notes,
-      });
+      };
+
+      if (isEditMode) {
+        await updateApplication(id, payload);
+      } else {
+        await createApplication(payload);
+      }
 
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError("Failed to create application.");
+      setError(
+        isEditMode
+          ? "Failed to update application."
+          : "Failed to create application."
+      );
     } finally {
       setSubmitting(false);
     }
   }
 
+  if (loading) {
+    return <p>Loading application...</p>;
+  }
+
   return (
     <div className="page-container">
-      <h1>Add Application</h1>
+      <h1>{isEditMode ? "Edit Application" : "Add Application"}</h1>
 
       <form className="application-form" onSubmit={handleSubmit}>
         <div className="form-group">
@@ -140,7 +194,13 @@ export default function ApplicationFormPage() {
 
         <div className="form-actions">
           <button type="submit" disabled={submitting}>
-            {submitting ? "Saving..." : "Save Application"}
+            {submitting
+              ? isEditMode
+                ? "Saving..."
+                : "Creating..."
+              : isEditMode
+              ? "Save Changes"
+              : "Save Application"}
           </button>
         </div>
       </form>

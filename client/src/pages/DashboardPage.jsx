@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getApplications } from "../services/applicationService";
+import {
+  deleteApplication,
+  getApplications,
+} from "../services/applicationService";
 
 function formatDate(dateString) {
   if (!dateString) return "—";
-
   return new Date(dateString).toLocaleDateString();
 }
 
@@ -28,22 +30,38 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function loadApplications() {
-      try {
-        setLoading(true);
-        const data = await getApplications();
-        setApplications(data.applications || []);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load applications.");
-      } finally {
-        setLoading(false);
-      }
+  async function loadApplications() {
+    try {
+      setLoading(true);
+      const data = await getApplications();
+      setApplications(data.applications || []);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load applications.");
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     loadApplications();
   }, []);
+
+  async function handleDelete(id) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this application?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteApplication(id);
+      setApplications((prev) => prev.filter((app) => app.id !== id));
+    } catch (err) {
+      console.error(err);
+      setError("Failed to delete application.");
+    }
+  }
 
   if (loading) {
     return <p>Loading applications...</p>;
@@ -88,6 +106,7 @@ export default function DashboardPage() {
                 <th>Status</th>
                 <th>Date Applied</th>
                 <th>Link</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -113,6 +132,23 @@ export default function DashboardPage() {
                     ) : (
                       "—"
                     )}
+                  </td>
+                  <td>
+                    <div className="table-actions">
+                      <Link
+                        to={`/edit/${application.id}`}
+                        className="table-action-link"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() => handleDelete(application.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
