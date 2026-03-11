@@ -20,7 +20,17 @@ export async function getHealth(_req, res) {
 
 export async function createApplication(req, res) {
   try {
-    const { company, role, status, dateApplied, link, notes } = req.body || {};
+    const {
+      company,
+      role,
+      status,
+      source,
+      salary,
+      location,
+      dateApplied,
+      link,
+      notes,
+    } = req.body || {};
 
     if (!company || !role) {
       return res.status(400).json({
@@ -34,6 +44,9 @@ export async function createApplication(req, res) {
         company: company.trim(),
         role: role.trim(),
         status: status?.trim() || "APPLIED",
+        source: source?.trim() || null,
+        salary: salary?.trim() || null,
+        location: location?.trim() || null,
         dateApplied: dateApplied ? new Date(dateApplied) : null,
         link: link?.trim() || null,
         notes: notes?.trim() || null,
@@ -105,7 +118,17 @@ export async function getApplicationById(req, res) {
 export async function updateApplication(req, res) {
   try {
     const { id } = req.params;
-    const { company, role, status, dateApplied, link, notes } = req.body || {};
+    const {
+      company,
+      role,
+      status,
+      source,
+      salary,
+      location,
+      dateApplied,
+      link,
+      notes,
+    } = req.body || {};
 
     const existingApplication = await prisma.application.findUnique({
       where: { id },
@@ -124,6 +147,18 @@ export async function updateApplication(req, res) {
         company: company?.trim() ?? existingApplication.company,
         role: role?.trim() ?? existingApplication.role,
         status: status?.trim() ?? existingApplication.status,
+        source:
+          source !== undefined
+            ? source?.trim() || null
+            : existingApplication.source,
+        salary:
+          salary !== undefined
+            ? salary?.trim() || null
+            : existingApplication.salary,
+        location:
+          location !== undefined
+            ? location?.trim() || null
+            : existingApplication.location,
         dateApplied: dateApplied
           ? new Date(dateApplied)
           : existingApplication.dateApplied,

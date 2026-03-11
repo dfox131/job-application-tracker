@@ -11,6 +11,9 @@ model Application {
   company     String
   role        String
   status      String   @default("APPLIED")
+  source      String?
+  salary      String?
+  location    String?
   dateApplied DateTime?
   link        String?
   notes       String?

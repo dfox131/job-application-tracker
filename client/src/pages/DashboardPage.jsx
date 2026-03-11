@@ -7,7 +7,11 @@ import {
 
 function formatDate(dateString) {
   if (!dateString) return "—";
-  return new Date(dateString).toLocaleDateString();
+
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    timeZone: "UTC",
+  });
 }
 
 function getStatusClass(status) {
@@ -72,8 +76,10 @@ export default function DashboardPage() {
     return applications.filter((application) => {
       const matchesSearch =
         !normalizedSearch ||
-        application.company.toLowerCase().includes(normalizedSearch) ||
-        application.role.toLowerCase().includes(normalizedSearch);
+        application.company?.toLowerCase().includes(normalizedSearch) ||
+        application.role?.toLowerCase().includes(normalizedSearch) ||
+        application.source?.toLowerCase().includes(normalizedSearch) ||
+        application.location?.toLowerCase().includes(normalizedSearch);
 
       const matchesStatus =
         statusFilter === "ALL" || application.status === statusFilter;
@@ -112,7 +118,7 @@ export default function DashboardPage() {
             <input
               id="search"
               type="text"
-              placeholder="Search by company or role"
+              placeholder="Search by company, role, source, or location"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
@@ -160,6 +166,9 @@ export default function DashboardPage() {
                 <th>Company</th>
                 <th>Role</th>
                 <th>Status</th>
+                <th>Source</th>
+                <th>Salary</th>
+                <th>Location</th>
                 <th>Date Applied</th>
                 <th>Link</th>
                 <th>Actions</th>
@@ -175,6 +184,9 @@ export default function DashboardPage() {
                       {application.status}
                     </span>
                   </td>
+                  <td>{application.source || "—"}</td>
+                  <td>{application.salary || "—"}</td>
+                  <td>{application.location || "—"}</td>
                   <td>{formatDate(application.dateApplied)}</td>
                   <td>
                     {application.link ? (

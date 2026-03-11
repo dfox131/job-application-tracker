@@ -10,6 +10,9 @@ const initialFormData = {
   company: "",
   role: "",
   status: "APPLIED",
+  source: "",
+  salary: "",
+  location: "",
   dateApplied: "",
   link: "",
   notes: "",
@@ -17,7 +20,7 @@ const initialFormData = {
 
 function formatDateForInput(dateString) {
   if (!dateString) return "";
-  return new Date(dateString).toISOString().split("T")[0];
+  return dateString.split("T")[0];
 }
 
 export default function ApplicationFormPage() {
@@ -43,6 +46,9 @@ export default function ApplicationFormPage() {
           company: application.company || "",
           role: application.role || "",
           status: application.status || "APPLIED",
+          source: application.source || "",
+          salary: application.salary || "",
+          location: application.location || "",
           dateApplied: formatDateForInput(application.dateApplied),
           link: application.link || "",
           notes: application.notes || "",
@@ -83,6 +89,9 @@ export default function ApplicationFormPage() {
         company: formData.company,
         role: formData.role,
         status: formData.status,
+        source: formData.source,
+        salary: formData.salary,
+        location: formData.location,
         dateApplied: formData.dateApplied || null,
         link: formData.link,
         notes: formData.notes,
@@ -124,7 +133,7 @@ export default function ApplicationFormPage() {
             type="text"
             value={formData.company}
             onChange={handleChange}
-            placeholder="OpenAI"
+            placeholder="Benchling"
           />
         </div>
 
@@ -136,7 +145,7 @@ export default function ApplicationFormPage() {
             type="text"
             value={formData.role}
             onChange={handleChange}
-            placeholder="Software Engineer"
+            placeholder="Software Engineer, New Grad (2026)"
           />
         </div>
 
@@ -153,6 +162,42 @@ export default function ApplicationFormPage() {
             <option value="OFFER">Offer</option>
             <option value="REJECTED">Rejected</option>
           </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="source">Source</label>
+          <input
+            id="source"
+            name="source"
+            type="text"
+            value={formData.source}
+            onChange={handleChange}
+            placeholder="Welcome to the Jungle"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="salary">Salary</label>
+          <input
+            id="salary"
+            name="salary"
+            type="text"
+            value={formData.salary}
+            onChange={handleChange}
+            placeholder="$144K or $145K - $170K"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="location">Location</label>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="SF"
+          />
         </div>
 
         <div className="form-group">
@@ -186,7 +231,7 @@ export default function ApplicationFormPage() {
             rows="5"
             value={formData.notes}
             onChange={handleChange}
-            placeholder="Applied through company site..."
+            placeholder="Applied through company site after finding on job board..."
           />
         </div>
 
@@ -195,9 +240,7 @@ export default function ApplicationFormPage() {
         <div className="form-actions">
           <button type="submit" disabled={submitting}>
             {submitting
-              ? isEditMode
-                ? "Saving..."
-                : "Creating..."
+              ? "Saving..."
               : isEditMode
               ? "Save Changes"
               : "Save Application"}
