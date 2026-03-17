@@ -177,7 +177,11 @@ export default function DashboardPage() {
             <tbody>
               {filteredApplications.map((application) => (
                 <tr key={application.id}>
-                  <td className="company-cell">{application.company}</td>
+                  <td className="company-cell">
+                    <Link to={`/applications/${application.id}`} className="company-link">
+                      {application.company}
+                    </Link>
+                  </td>
                   <td>{application.role}</td>
                   <td>
                     <span className={getStatusClass(application.status)}>

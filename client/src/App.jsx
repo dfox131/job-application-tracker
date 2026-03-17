@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import ApplicationFormPage from "./pages/ApplicationFormPage";
+import ApplicationDetailsPage from "./pages/ApplicationDetailsPage";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/new" element={<ApplicationFormPage />} />
           <Route path="/edit/:id" element={<ApplicationFormPage />} />
+          <Route path="/applications/:id" element={<ApplicationDetailsPage />} />
         </Routes>
       </div>
     </BrowserRouter>
