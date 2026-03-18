@@ -29,12 +29,47 @@ function getStatusClass(status) {
   }
 }
 
+function sortApplications(applications, sortOption) {
+  const sorted = [...applications];
+
+  switch (sortOption) {
+    case "DATE_DESC":
+      sorted.sort((a, b) => {
+        const aTime = a.dateApplied ? new Date(a.dateApplied).getTime() : 0;
+        const bTime = b.dateApplied ? new Date(b.dateApplied).getTime() : 0;
+        return bTime - aTime;
+      });
+      break;
+    case "DATE_ASC":
+      sorted.sort((a, b) => {
+        const aTime = a.dateApplied ? new Date(a.dateApplied).getTime() : 0;
+        const bTime = b.dateApplied ? new Date(b.dateApplied).getTime() : 0;
+        return aTime - bTime;
+      });
+      break;
+    case "COMPANY_ASC":
+      sorted.sort((a, b) => a.company.localeCompare(b.company));
+      break;
+    case "COMPANY_DESC":
+      sorted.sort((a, b) => b.company.localeCompare(a.company));
+      break;
+    case "STATUS_ASC":
+      sorted.sort((a, b) => a.status.localeCompare(b.status));
+      break;
+    default:
+      break;
+  }
+
+  return sorted;
+}
+
 export default function DashboardPage() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [sortOption, setSortOption] = useState("DATE_DESC");
 
   async function loadApplications() {
     try {
@@ -73,7 +108,7 @@ export default function DashboardPage() {
   const filteredApplications = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    return applications.filter((application) => {
+    const filtered = applications.filter((application) => {
       const matchesSearch =
         !normalizedSearch ||
         application.company?.toLowerCase().includes(normalizedSearch) ||
@@ -86,7 +121,9 @@ export default function DashboardPage() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [applications, searchTerm, statusFilter]);
+
+    return sortApplications(filtered, sortOption);
+  }, [applications, searchTerm, statusFilter, sortOption]);
 
   if (loading) {
     return <p>Loading applications...</p>;
@@ -138,6 +175,21 @@ export default function DashboardPage() {
               <option value="REJECTED">Rejected</option>
             </select>
           </div>
+
+          <div className="control-group filter-group">
+            <label htmlFor="sortOption">Sort By</label>
+            <select
+              id="sortOption"
+              value={sortOption}
+              onChange={(event) => setSortOption(event.target.value)}
+            >
+              <option value="DATE_DESC">Newest Applied Date</option>
+              <option value="DATE_ASC">Oldest Applied Date</option>
+              <option value="COMPANY_ASC">Company A–Z</option>
+              <option value="COMPANY_DESC">Company Z–A</option>
+              <option value="STATUS_ASC">Status A–Z</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -178,7 +230,10 @@ export default function DashboardPage() {
               {filteredApplications.map((application) => (
                 <tr key={application.id}>
                   <td className="company-cell">
-                    <Link to={`/applications/${application.id}`} className="company-link">
+                    <Link
+                      to={`/applications/${application.id}`}
+                      className="company-link"
+                    >
                       {application.company}
                     </Link>
                   </td>
