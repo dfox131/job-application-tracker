@@ -6,8 +6,11 @@ import {
   getApplications,
   updateApplication,
 } from "../controllers/applicationController.js";
+import { requireAuth } from "../middleware/requireAuth.js";
 
 const router = Router();
+
+router.use(requireAuth);
 
 router.get("/", getApplications);
 router.get("/:id", getApplicationById);

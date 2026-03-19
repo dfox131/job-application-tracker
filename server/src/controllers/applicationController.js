@@ -50,6 +50,7 @@ export async function createApplication(req, res) {
         dateApplied: dateApplied ? new Date(dateApplied) : null,
         link: link?.trim() || null,
         notes: notes?.trim() || null,
+        userId: req.user.userId,
       },
     });
 
@@ -66,9 +67,12 @@ export async function createApplication(req, res) {
   }
 }
 
-export async function getApplications(_req, res) {
+export async function getApplications(req, res) {
   try {
     const applications = await prisma.application.findMany({
+      where: {
+        userId: req.user.userId,
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -91,8 +95,11 @@ export async function getApplicationById(req, res) {
   try {
     const { id } = req.params;
 
-    const application = await prisma.application.findUnique({
-      where: { id },
+    const application = await prisma.application.findFirst({
+      where: {
+        id,
+        userId: req.user.userId,
+      },
     });
 
     if (!application) {
@@ -130,8 +137,11 @@ export async function updateApplication(req, res) {
       notes,
     } = req.body || {};
 
-    const existingApplication = await prisma.application.findUnique({
-      where: { id },
+    const existingApplication = await prisma.application.findFirst({
+      where: {
+        id,
+        userId: req.user.userId,
+      },
     });
 
     if (!existingApplication) {
@@ -188,8 +198,11 @@ export async function deleteApplication(req, res) {
   try {
     const { id } = req.params;
 
-    const existingApplication = await prisma.application.findUnique({
-      where: { id },
+    const existingApplication = await prisma.application.findFirst({
+      where: {
+        id,
+        userId: req.user.userId,
+      },
     });
 
     if (!existingApplication) {
