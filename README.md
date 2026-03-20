@@ -2,7 +2,9 @@
 
 A full-stack job application tracker built with React, Node.js, Express, PostgreSQL, and Prisma.
 
-This project helps track job applications across the search process, including company, role, status, source, salary, location, application date, job link, and notes. It includes a polished dashboard, filtering, sorting, and detailed application views.
+This project helps users track job applications across the search process, including company, role, status, source, salary, location, application date, job link, and notes. It includes authentication, user-specific application data, a polished dashboard, filtering, sorting, and detailed application views.
+
+I built this project to demonstrate full-stack development skills with a practical product I can actually use during my own job search.
 
 ## Live Demo
 
@@ -11,6 +13,8 @@ This project helps track job applications across the search process, including c
 
 ## Features
 
+- User registration and login with JWT authentication
+- User-specific application data and protected routes
 - Create, read, update, and delete job applications
 - Track application status, source, salary, location, and notes
 - Search by company, role, source, or location
@@ -58,39 +62,40 @@ job-tracker/
 
 - GET /health
 
-### Applications
+### Auth
+
+- POST /api/auth/register
+- POST /api/auth/login
+- GET /api/auth/me
+
+### Applications (protected)
 
 - GET /api/applications
-
 - GET /api/applications/:id
-
 - POST /api/applications
-
 - PUT /api/applications/:id
-
 - DELETE /api/applications/:id
 
 ## Data Model
 
-Each application includes:
+### User
+
+- id
+- email
+- passwordHash
+
+### Application
 
 - company
-
 - role
-
 - status
-
 - source
-
 - salary
-
 - location
-
 - dateApplied
-
 - link
-
 - notes
+- userId
 
 ## Local Development
 
@@ -114,6 +119,7 @@ Create a .env file in server/:
 DATABASE_URL="your_database_url_here"
 PORT=4000
 CLIENT_URL=http://localhost:5173
+JWT_SECRET="your_jwt_secret_here"
 ```
 
 Run the backend:
@@ -151,15 +157,11 @@ Add screenshots here later, for example:
 
 ## Future Improvements
 
-- User authentication
-
-- User-specific application data
-
 - AI-powered job description analysis
-
 - Resume/job match insights
-
 - Cover letter generation
+- Dashboard analytics and charts
+- Export applications to CSV
 
 ## Author
 
