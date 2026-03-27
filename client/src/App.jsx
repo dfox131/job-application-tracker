@@ -5,6 +5,7 @@ import ApplicationDetailsPage from "./pages/ApplicationDetailsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ResumeMatchPage from "./pages/ResumeMatchPage";
 
 function AppLayout() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function AppLayout() {
         {token ? (
           <>
             <Link to="/new">Add Application</Link>
+            <Link to="/ai/resume-match">Resume Match Analyzer</Link>
             <span style={{ marginLeft: "auto" }}>
               {user?.email}
             </span>
@@ -71,6 +73,14 @@ function AppLayout() {
           element={
             <ProtectedRoute>
               <ApplicationDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai/resume-match"
+          element={
+            <ProtectedRoute>
+              <ResumeMatchPage />
             </ProtectedRoute>
           }
         />
