@@ -2,6 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function ResumeMatchPage() {
+  console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+  console.log("token:", localStorage.getItem("token"));
+
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState(null);
