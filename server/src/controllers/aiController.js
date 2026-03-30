@@ -16,14 +16,23 @@ You are an expert resume reviewer and ATS analyzer.
 
 Compare the following resume with the job description.
 
-Return your response STRICTLY in JSON format with the following structure:
+Return your response STRICTLY in valid JSON format with the following structure:
 
 {
+  "matchScore": 0,
   "matchSummary": "Short summary of how well the resume matches the job",
   "matchingSkills": ["skill1", "skill2"],
   "missingSkills": ["skill1", "skill2"],
   "suggestions": ["suggestion1", "suggestion2"]
 }
+
+Rules:
+- matchScore must be an integer from 0 to 100
+- be realistic and conservative with the score
+- matchingSkills should list strengths already shown in the resume that align with the job
+- missingSkills should list important skills or qualifications not clearly shown in the resume
+- suggestions should give practical ways to improve the resume for this job
+- do not include any text outside the JSON
 
 Resume:
 ${resumeText}
@@ -33,7 +42,7 @@ ${jobDescription}
 `;
 
     const response = await openai.responses.create({
-      model: "gpt-5.4-mini", // cheaper + fast
+      model: "gpt-5.4-mini",
       input: prompt,
     });
 
@@ -44,7 +53,6 @@ ${jobDescription}
     try {
       parsed = JSON.parse(output);
     } catch {
-      // fallback if model returns slightly messy JSON
       return res.json({
         ok: true,
         raw: output,

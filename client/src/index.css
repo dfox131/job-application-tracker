@@ -495,3 +495,9 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+.match-score {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.25rem 0 0;
+}

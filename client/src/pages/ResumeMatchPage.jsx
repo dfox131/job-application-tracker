@@ -93,6 +93,13 @@ export default function ResumeMatchPage() {
         <div className="results-card">
           <h2>Analysis Results</h2>
 
+          {typeof result.matchScore === "number" && (
+            <section className="result-section">
+              <h3>Match Score</h3>
+              <p className="match-score">{result.matchScore}%</p>
+            </section>
+          )}
+
           <section className="result-section">
             <h3>Summary</h3>
             <p>{result.matchSummary || "No summary returned."}</p>
