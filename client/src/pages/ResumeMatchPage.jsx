@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 export default function ResumeMatchPage() {
-  console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-  console.log("token:", localStorage.getItem("token"));
+  const location = useLocation();
+  const prefilledJobDescription = location.state?.jobDescription || "";
+  const company = location.state?.company || "";
+  const role = location.state?.role || "";
 
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (prefilledJobDescription) {
+      setJobDescription(prefilledJobDescription);
+    }
+  }, [prefilledJobDescription]);
 
   const handleAnalyze = async (e) => {
     e.preventDefault();
@@ -56,7 +65,9 @@ export default function ResumeMatchPage() {
     <div className="resume-match-page">
       <h1>Resume Match Analyzer</h1>
       <p className="page-subtitle">
-        Paste your resume and a job description to see how well they align.
+        {company || role
+          ? `Analyze your resume against ${role || "this role"}${company ? ` at ${company}` : ""}.`
+          : "Paste your resume and a job description to see how well they align."}
       </p>
 
       <form onSubmit={handleAnalyze} className="resume-match-form">

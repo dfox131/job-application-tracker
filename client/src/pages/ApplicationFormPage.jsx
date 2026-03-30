@@ -16,6 +16,7 @@ const initialFormData = {
   dateApplied: "",
   link: "",
   notes: "",
+  jobDescription: "",
 };
 
 function formatDateForInput(dateString) {
@@ -52,6 +53,7 @@ export default function ApplicationFormPage() {
           dateApplied: formatDateForInput(application.dateApplied),
           link: application.link || "",
           notes: application.notes || "",
+          jobDescription: application.jobDescription || "",
         });
       } catch (err) {
         console.error(err);
@@ -95,6 +97,7 @@ export default function ApplicationFormPage() {
         dateApplied: formData.dateApplied || null,
         link: formData.link,
         notes: formData.notes,
+        jobDescription: formData.jobDescription,
       };
 
       if (isEditMode) {
@@ -220,6 +223,18 @@ export default function ApplicationFormPage() {
             value={formData.link}
             onChange={handleChange}
             placeholder="https://company.com/job-posting"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="jobDescription">Job Description</label>
+          <textarea
+            id="jobDescription"
+            name="jobDescription"
+            rows="10"
+            value={formData.jobDescription}
+            onChange={handleChange}
+            placeholder="Paste the full job description here..."
           />
         </div>
 

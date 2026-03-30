@@ -72,6 +72,17 @@ export default function ApplicationDetailsPage() {
     }
   }
 
+  function handleAnalyzeMatch() {
+    navigate("/ai/resume-match", {
+      state: {
+        applicationId: application.id,
+        company: application.company,
+        role: application.role,
+        jobDescription: application.jobDescription || "",
+      },
+    });
+  }
+
   if (loading) {
     return <p>Loading application...</p>;
   }
@@ -94,6 +105,14 @@ export default function ApplicationDetailsPage() {
         </div>
 
         <div className="details-header-actions">
+          <button
+            type="button"
+            className="primary-link-button"
+            onClick={handleAnalyzeMatch}
+          >
+            Analyze Resume Match
+          </button>
+
           <Link to={`/edit/${application.id}`} className="primary-link-button">
             Edit
           </Link>
@@ -147,6 +166,13 @@ export default function ApplicationDetailsPage() {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="details-card">
+        <h2>Job Description</h2>
+        <p className="details-notes">
+          {application.jobDescription || "No job description saved yet."}
+        </p>
       </div>
 
       <div className="details-card">

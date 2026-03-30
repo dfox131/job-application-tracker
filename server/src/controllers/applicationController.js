@@ -30,6 +30,7 @@ export async function createApplication(req, res) {
       dateApplied,
       link,
       notes,
+      jobDescription,
     } = req.body || {};
 
     if (!company || !role) {
@@ -50,6 +51,7 @@ export async function createApplication(req, res) {
         dateApplied: dateApplied ? new Date(dateApplied) : null,
         link: link?.trim() || null,
         notes: notes?.trim() || null,
+        jobDescription: jobDescription?.trim() || null,
         userId: req.user.userId,
       },
     });
@@ -135,6 +137,7 @@ export async function updateApplication(req, res) {
       dateApplied,
       link,
       notes,
+      jobDescription,
     } = req.body || {};
 
     const existingApplication = await prisma.application.findFirst({
@@ -178,6 +181,10 @@ export async function updateApplication(req, res) {
           notes !== undefined
             ? notes?.trim() || null
             : existingApplication.notes,
+        jobDescription:
+          jobDescription !== undefined
+            ? jobDescription?.trim() || null
+            : existingApplication.jobDescription,
       },
     });
 
