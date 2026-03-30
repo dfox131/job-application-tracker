@@ -97,6 +97,13 @@ export default function ResumeMatchPage() {
             <section className="result-section">
               <h3>Match Score</h3>
               <p className="match-score">{result.matchScore}%</p>
+
+              <div className="match-score-bar">
+                <div
+                  className="match-score-fill"
+                  style={{ width: `${result.matchScore}%` }}
+                />
+              </div>
             </section>
           )}
 

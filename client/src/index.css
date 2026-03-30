@@ -499,5 +499,21 @@ button:disabled {
 .match-score {
   font-size: 2rem;
   font-weight: 700;
-  margin: 0.25rem 0 0;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.match-score-bar {
+  width: 100%;
+  max-width: 420px;
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.match-score-fill {
+  height: 100%;
+  background: #222;
+  border-radius: 999px;
+  transition: width 0.3s ease;
 }
