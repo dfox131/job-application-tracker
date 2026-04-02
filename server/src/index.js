@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
 import { getHealth } from "./controllers/applicationController.js";
 import { openai } from "./openai.js";
 import aiRoutes from "./routes/aiRoutes.js";
@@ -34,6 +35,7 @@ app.use(express.json());
 app.get("/health", getHealth);
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/jobs", jobRoutes);
 
 const PORT = process.env.PORT || 4000;
 

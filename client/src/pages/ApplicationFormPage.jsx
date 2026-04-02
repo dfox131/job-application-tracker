@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   createApplication,
+  extractJobDescription,
   getApplicationById,
   updateApplication,
 } from "../services/applicationService";
@@ -32,6 +33,7 @@ export default function ApplicationFormPage() {
   const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(isEditMode);
   const [submitting, setSubmitting] = useState(false);
+  const [extractingJobDescription, setExtractingJobDescription] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -73,6 +75,34 @@ export default function ApplicationFormPage() {
       ...prev,
       [name]: value,
     }));
+  }
+
+  async function handleFetchJobDescription() {
+    setError("");
+
+    if (!formData.link.trim()) {
+      setError("Please enter a job link first.");
+      return;
+    }
+
+    try {
+      setExtractingJobDescription(true);
+
+      const data = await extractJobDescription(formData.link);
+
+      setFormData((prev) => ({
+        ...prev,
+        jobDescription: data.jobDescription || "",
+      }));
+    } catch (err) {
+      console.error(err);
+      setError(
+        err.response?.data?.error ||
+          "Failed to fetch job description from the provided link."
+      );
+    } finally {
+      setExtractingJobDescription(false);
+    }
   }
 
   async function handleSubmit(event) {
@@ -224,10 +254,20 @@ export default function ApplicationFormPage() {
             onChange={handleChange}
             placeholder="https://company.com/job-posting"
           />
+          <button
+            type="button"
+            onClick={handleFetchJobDescription}
+            disabled={extractingJobDescription}
+          >
+            {extractingJobDescription ? "Fetching..." : "Fetch from Job Link"}
+          </button>
         </div>
 
         <div className="form-group">
           <label htmlFor="jobDescription">Job Description</label>
+          <p className="field-helper-text">
+            Paste the job description manually or fetch it from the job link.
+          </p>
           <textarea
             id="jobDescription"
             name="jobDescription"

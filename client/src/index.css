@@ -517,3 +517,14 @@ button:disabled {
   border-radius: 999px;
   transition: width 0.3s ease;
 }
+
+.field-helper-text {
+  margin: 0.25rem 0 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.form-group button[type="button"] {
+  margin-top: 0.75rem;
+  width: fit-content;
+}
