@@ -19,9 +19,6 @@ const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL].filter(
 app.use(
   cors({
     origin(origin, callback) {
-      console.log("Incoming CORS origin:", origin);
-      console.log("Allowed origins:", allowedOrigins);
-
       if (!origin) {
         return callback(null, true);
       }
