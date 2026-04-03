@@ -12,20 +12,30 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL];
+const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL].filter(
+  Boolean,
+);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin) return callback(null, true);
+      console.log("Incoming CORS origin:", origin);
+      console.log("Allowed origins:", allowedOrigins);
 
-      // allow exact matches
-      if (allowedOrigins.includes(origin)) {
+      if (!origin) {
         return callback(null, true);
       }
 
-      // allow all Vercel preview + prod domains
-      if (origin.includes(".vercel.app")) {
+      const normalizedOrigin = origin.toLowerCase();
+      const normalizedAllowedOrigins = allowedOrigins.map((value) =>
+        value.toLowerCase(),
+      );
+
+      if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      if (/^https:\/\/.*\.vercel\.app$/.test(normalizedOrigin)) {
         return callback(null, true);
       }
 
