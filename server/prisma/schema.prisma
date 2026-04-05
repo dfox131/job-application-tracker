@@ -27,6 +27,14 @@ model Application {
   link           String?
   notes          String?
   jobDescription String?
+
+  matchScore     Int?
+  matchSummary   String?
+  matchingSkills String[]
+  missingSkills  String[]
+  suggestions    String[]
+  lastAnalyzedAt DateTime?
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

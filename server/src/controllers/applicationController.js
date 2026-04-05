@@ -1,4 +1,5 @@
 import { prisma } from "../prisma.js";
+import { openai } from "../openai.js";
 
 export async function getHealth(_req, res) {
   try {
@@ -232,6 +233,106 @@ export async function deleteApplication(req, res) {
     res.status(500).json({
       ok: false,
       error: "Failed to delete application.",
+    });
+  }
+}
+
+export async function analyzeAndSaveApplication(req, res) {
+  try {
+    const { id } = req.params;
+    const { resumeText } = req.body;
+    const userId = req.user.userId;
+
+    if (!resumeText) {
+      return res.status(400).json({
+        ok: false,
+        error: "resumeText is required.",
+      });
+    }
+
+    // 1. Get application
+    const application = await prisma.application.findUnique({
+      where: { id },
+    });
+
+    if (!application || application.userId !== userId) {
+      return res.status(404).json({
+        ok: false,
+        error: "Application not found.",
+      });
+    }
+
+    if (!application.jobDescription) {
+      return res.status(400).json({
+        ok: false,
+        error: "No job description saved for this application.",
+      });
+    }
+
+    // 2. Build prompt
+    const prompt = `
+You are an expert resume reviewer and ATS analyzer.
+
+Compare the following resume with the job description.
+
+Return STRICT JSON:
+
+{
+  "matchScore": number (0-100),
+  "matchSummary": "Short summary",
+  "matchingSkills": ["skill1"],
+  "missingSkills": ["skill1"],
+  "suggestions": ["suggestion1"]
+}
+
+Resume:
+${resumeText}
+
+Job Description:
+${application.jobDescription}
+`;
+
+    // 3. Call OpenAI
+    const response = await openai.responses.create({
+      model: "gpt-5.4-mini",
+      input: prompt,
+    });
+
+    const output = response.output_text;
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(output);
+    } catch {
+      return res.json({
+        ok: true,
+        raw: output,
+      });
+    }
+
+    // 4. Save to DB
+    const updated = await prisma.application.update({
+      where: { id },
+      data: {
+        matchScore: parsed.matchScore ?? null,
+        matchSummary: parsed.matchSummary ?? null,
+        matchingSkills: parsed.matchingSkills ?? [],
+        missingSkills: parsed.missingSkills ?? [],
+        suggestions: parsed.suggestions ?? [],
+        lastAnalyzedAt: new Date(),
+      },
+    });
+
+    res.json({
+      ok: true,
+      application: updated,
+    });
+  } catch (error) {
+    console.error("Analyze + save failed:", error);
+    res.status(500).json({
+      ok: false,
+      error: error.message,
     });
   }
 }

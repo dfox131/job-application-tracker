@@ -61,3 +61,15 @@ export async function extractJobDescription(jobLink) {
 
   return response.data;
 }
+
+export async function analyzeApplication(id, resumeText) {
+  const response = await axios.post(
+    `${APPLICATIONS_API_URL}/${id}/analyze`,
+    { resumeText },
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+
+  return response.data;
+}

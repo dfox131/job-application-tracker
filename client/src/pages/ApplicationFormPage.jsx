@@ -154,7 +154,7 @@ export default function ApplicationFormPage() {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container application-form-page">
       <h1>{isEditMode ? "Edit Application" : "Add Application"}</h1>
 
       <form className="application-form" onSubmit={handleSubmit}>
